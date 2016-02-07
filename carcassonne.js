@@ -1,4 +1,3 @@
-tilImages = [];
 var meepleImages = [];
 
 function getInitialImageList() {
@@ -54,6 +53,7 @@ function getInitialImageList() {
   var orderedTileImages = end4.concat(end3, straight, cloister, elbow, starter, starterish, starterL, starterR, cloisterR, diagCR, diagCRS, cityR, cityRS, city1, cityTR, cityLR, diagCS, diagC, straightCS, straightC, city3S, city3, city4);
 
   tileImages = shuffle(orderedTileImages);
+  tileImages.push(starter[1]);
 
 }
 
