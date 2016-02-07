@@ -68,7 +68,7 @@
       x.appendChild(input1);
       var imgEle = document.getElementById(("name", "m" + meeplesUsed));
       imgEle.addEventListener('dragstart', function(ev) {
-        dragMeeple(ev)
+        drag(ev)
       }, false);
       imgEle.className = "meeple";
       var imgStyle = imgEle.getAttribute("style");
@@ -114,18 +114,21 @@
 
     function dragMeeple(event) {
       var style = window.getComputedStyle(dragElement, null);
-      dragElement = document.getElementById((event.target.id));
       event.dataTransfer.setData("text/plain", (parseInt(style.getPropertyValue("left"), 10) - event.clientX) + ',' + (parseInt(style.getPropertyValue("top"), 10) - event.clientY));
     }
 
     function dragTile(ev) {
       ev.dataTransfer.setData("text", ev.target.id);
-      dragElement = document.getElementById((event.target.id));
     }
 
     function drag(ev) {
-      ev.dataTransfer.setData("text", ev.target.id);
       dragElement = document.getElementById((event.target.id));
+      var dragKey = ev.target.className;
+      if (dragKey == "meeple") {
+        dragMeeple(ev);
+      } else {
+        dragTile(ev);
+      }
     }
 
     function drop(ev) {
@@ -138,7 +141,16 @@
     }
 
     function dropTile(ev) {
-      dropCore(ev,dragElement.className);
+      ev.preventDefault();
+      var data = ev.dataTransfer.getData("text");
+
+      if (event.target.nodeName !== "IMG") {
+        ev.target.appendChild(document.getElementById(data));
+      } else {
+        var parentDiv = ev.target.parentNode;
+        parentDiv.appendChild(document.getElementById(data));
+      }
+
       var tileButton = document.getElementById('DrawTile');
       tileButton.disabled=false;
 
@@ -150,19 +162,6 @@
       dragElement.style.left = (ev.clientX + parseInt(offset[0], 10)) + 'px';
       dragElement.style.top = (ev.clientY + parseInt(offset[1], 10)) + 'px';
       ev.target.appendChild(document.dragElement);
-      //dropCore(ev, dragElement.className);
-    }
-
-    function dropCore(ev, dropType) {
-      ev.preventDefault();
-      var data = ev.dataTransfer.getData("text");
-      if(ev.target.className == "subsquare" && dropType == "tile") {
-          var parentDiv = ev.target.parentNode;
-          parentDiv.appendChild(document.getElementById(data));
-      }
-      else {
-          ev.target.appendChild(document.getElementById(data));
-      }
     }
 
     function genDivs() {
@@ -182,9 +181,10 @@
     function addGridCell(colIndex, rowIndex, row) {
       var cell = document.createElement("div");
       cell.className = "gridsquare";
-      cell.id = ("name", "cell" + rowIndex.toString() + colIndex.toString());
-      // cell.innerText = rowIndex.toString() + colIndex.toString();
-      //addGridDivs(cell);
+      var cellNumber = (colIndex * numCols) + rowIndex;
+      cell.innerText = cellNumber;
+      cell.id = ("name", "cell" + cellNumber);
+      addGridDivs(cell);
       row.appendChild(cell);
     }
 
@@ -194,9 +194,7 @@
           for (var rowIndex = 0; rowIndex < divs; rowIndex++) {
             var subsquare = document.createElement("div");
             subsquare.className = "subsquare";
-            subsquare.id = gridSquare.id + rowIndex .toString() + colIndex.toString();
             gridSquare.appendChild(subsquare);
-
           }
         }
 

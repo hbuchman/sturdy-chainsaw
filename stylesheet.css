@@ -31,12 +31,11 @@ title {
   border: 1px solid #aaaaaa;
   float: left;
 }
-.subsquare {
-  width: 23px;
-  height: 23px;
+.subquare {
+  width: 25px;
+  height: 25px;
   padding: 0px;
-  border: 1px solid red;
-  /*position: relative;*/
+  border: 1px solid #aaaaaa;
   float: left;
 }
 .row {
@@ -66,8 +65,6 @@ title {
 }
 .tile {
   z-index: 1;
-  position: absolute;
-  float: left;
 }
 .meeple {
   z-index: 2;
