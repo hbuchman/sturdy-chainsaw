@@ -1,4 +1,4 @@
-<!-- TODO Fix improper length bug. Col/Row num not getting set -->
+
 <!-- Place meeples in divs -->
 <!-- Start with start piece -->
 <html>
@@ -166,24 +166,24 @@
 
     function genDivs() {
       var boardGrid = document.getElementById('boardDiv');
-      for (var colIndex = 0; colIndex < numRows; colIndex++) {
+      for (var rowIndex = 0; rowIndex < numRows; rowIndex++) {
         var row = document.createElement("div");
         row.className = "row";
-        row.id = ("name", "row" + colIndex);
-        for (var rowIndex = 0; rowIndex < numCols; rowIndex++) {
-          addGridCell(colIndex, rowIndex, row)
+        row.id = ("name", "row" + rowIndex);
+        for (var colIndex = 0; colIndex < numCols; colIndex++) {
+          addGridCell(rowIndex,colIndex, row)
         }
         boardGrid.appendChild(row);
       }
       allowDropsInDivs(numCols);
     }
 
-    function addGridCell(colIndex, rowIndex, row) {
+    function addGridCell(rowIndex,colIndex, row) {
       var cell = document.createElement("div");
       cell.className = "gridsquare";
-      var cellNumber = (colIndex * numCols) + rowIndex;
-      cell.innerText = cellNumber;
-      cell.id = ("name", "cell" + cellNumber);
+      var cellID = cellId(rowIndex,colIndex);
+      cell.innerText = cellID;
+      cell.id = ("name", "cell" + cellID);
       addGridDivs(cell);
       row.appendChild(cell);
     }
@@ -217,7 +217,7 @@
       var boardGrid = document.getElementById('boardDiv');
       for (var colIndex = 0; colIndex < numRows; colIndex++) {
         var row = document.getElementById(("name", "row" + colIndex));
-        addGridCell(numRows, colIndex, row)
+        addGridCell(colIndex, numCols, row)
       }
       allowDropsInDivs(numCols);
       numCols = numCols + 1;
@@ -257,18 +257,22 @@
       numCols = numCols + 1;
     }
 
-
+    function cellId(row,col) {
+      var id = row.toString() + col.toString();
+      return id
+    }
 
     function allowDropsInDivs(numCols) {
-      var totalCols = numCols * numCols;
-      for (var col = 1; col <= (numCols * numCols); col++) {
-        var cellEle = document.getElementById(("name", "cell" + col))
-        cellEle.addEventListener("drop", function(ev) {
-          drop(ev)
-        }, false);
-        cellEle.addEventListener('dragover', function(ev) {
-          allowDrop(ev)
-        }, false);
+      for (var colIndex = 0; colIndex < numCols; colIndex++) {
+        for (var rowIndex = 0; rowIndex < numRows; rowIndex++) {
+            var cellEle = document.getElementById(("name", "cell" + cellId(rowIndex,colIndex)))
+            cellEle.addEventListener("drop", function(ev) {
+              drop(ev)
+            }, false);
+            cellEle.addEventListener('dragover', function(ev) {
+              allowDrop(ev)
+            }, false);
+        }
       }
     }
 
