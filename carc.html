@@ -1,3 +1,6 @@
+<!-- TODO Fix improper length bug. Col/Row num not getting set -->
+<!-- Place meeples in divs -->
+<!-- Start with start piece -->
 <html>
 
 <head>
@@ -19,7 +22,7 @@
     var tilesRemaining = -1;
     var numCols = 4;
     var numRows = 5;
-    
+
     var LEFT_ARROW = 37;
     var UP_ARROW = 38;
     var RIGHT_ARROW = 39;
@@ -65,7 +68,7 @@
       x.appendChild(input1);
       var imgEle = document.getElementById(("name", "m" + meeplesUsed));
       imgEle.addEventListener('dragstart', function(ev) {
-        drag(ev)
+        dragMeeple(ev)
       }, false);
       imgEle.className = "meeple";
       var imgStyle = imgEle.getAttribute("style");
@@ -78,7 +81,7 @@
     function addTile() {
       var tileButton = document.getElementById('DrawTile');
       tileButton.disabled=true;
-      
+
       var tileDiv = document.getElementById('drawnTileDiv');
 
       var input1 = document.createElement("img");
@@ -111,21 +114,18 @@
 
     function dragMeeple(event) {
       var style = window.getComputedStyle(dragElement, null);
+      dragElement = document.getElementById((event.target.id));
       event.dataTransfer.setData("text/plain", (parseInt(style.getPropertyValue("left"), 10) - event.clientX) + ',' + (parseInt(style.getPropertyValue("top"), 10) - event.clientY));
     }
 
     function dragTile(ev) {
       ev.dataTransfer.setData("text", ev.target.id);
+      dragElement = document.getElementById((event.target.id));
     }
 
     function drag(ev) {
+      ev.dataTransfer.setData("text", ev.target.id);
       dragElement = document.getElementById((event.target.id));
-      var dragKey = ev.target.className;
-      if (dragKey == "meeple") {
-        dragMeeple(ev);
-      } else {
-        dragTile(ev);
-      }
     }
 
     function drop(ev) {
@@ -138,16 +138,7 @@
     }
 
     function dropTile(ev) {
-      ev.preventDefault();
-      var data = ev.dataTransfer.getData("text");
-
-      if (event.target.nodeName !== "IMG") {
-        ev.target.appendChild(document.getElementById(data));
-      } else {
-        var parentDiv = ev.target.parentNode;
-        parentDiv.appendChild(document.getElementById(data));
-      }
-
+      dropCore(ev,dragElement.className);
       var tileButton = document.getElementById('DrawTile');
       tileButton.disabled=false;
 
@@ -159,6 +150,19 @@
       dragElement.style.left = (ev.clientX + parseInt(offset[0], 10)) + 'px';
       dragElement.style.top = (ev.clientY + parseInt(offset[1], 10)) + 'px';
       ev.target.appendChild(document.dragElement);
+      //dropCore(ev, dragElement.className);
+    }
+
+    function dropCore(ev, dropType) {
+      ev.preventDefault();
+      var data = ev.dataTransfer.getData("text");
+      if(ev.target.className == "subsquare" && dropType == "tile") {
+          var parentDiv = ev.target.parentNode;
+          parentDiv.appendChild(document.getElementById(data));
+      }
+      else {
+          ev.target.appendChild(document.getElementById(data));
+      }
     }
 
     function genDivs() {
@@ -178,10 +182,24 @@
     function addGridCell(colIndex, rowIndex, row) {
       var cell = document.createElement("div");
       cell.className = "gridsquare";
-      var cellNumber = (colIndex * numCols) + rowIndex;
-      cell.innerText = cellNumber;
-      cell.id = ("name", "cell" + cellNumber);
+      cell.id = ("name", "cell" + rowIndex.toString() + colIndex.toString());
+      // cell.innerText = rowIndex.toString() + colIndex.toString();
+      //addGridDivs(cell);
       row.appendChild(cell);
+    }
+
+    function addGridDivs(gridSquare) {
+      var divs =3;
+        for (var colIndex = 0; colIndex < divs; colIndex++) {
+          for (var rowIndex = 0; rowIndex < divs; rowIndex++) {
+            var subsquare = document.createElement("div");
+            subsquare.className = "subsquare";
+            subsquare.id = gridSquare.id + rowIndex .toString() + colIndex.toString();
+            gridSquare.appendChild(subsquare);
+
+          }
+        }
+
     }
 
     function addRowOfCells() {
@@ -206,8 +224,8 @@
       allowDropsInDivs(numCols);
       numCols = numCols + 1;
     }
-    
-    
+
+
      function addGridCellFront(colIndex, rowIndex, row) {
       var cell = document.createElement("div");
       cell.className = "gridsquare";
@@ -240,8 +258,8 @@
       allowDropsInDivs(numCols);
       numCols = numCols + 1;
     }
-    
-    
+
+
 
     function allowDropsInDivs(numCols) {
       var totalCols = numCols * numCols;
@@ -260,7 +278,7 @@
       numRotations++;
       rotateImageCore()
     }
-    
+
     function rotateImageCore() {
       var imageToRotate = tileInPlay;
       imageToRotate.setAttribute("style", "transform:rotate(" + (90 * numRotations) + "deg)");
@@ -301,7 +319,7 @@
           }
       }
     };
-    
+
   </script>
 </head>
 

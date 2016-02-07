@@ -2,7 +2,7 @@ body {
   //background-image: url(http://people.stfx.ca/x2011/x2011ane/info102/assignment1/background2.jpg);
   background-image: url(http://www.vicentephoto.com/v1site_images/backgrounds/tumblr_static_grey-background.jpg);
   /*background-image:url();*/
-  
+
   background-color: grey;
   width=1000px;
 }
@@ -31,6 +31,14 @@ title {
   border: 1px solid #aaaaaa;
   float: left;
 }
+.subsquare {
+  width: 23px;
+  height: 23px;
+  padding: 0px;
+  border: 1px solid red;
+  /*position: relative;*/
+  float: left;
+}
 .row {
   border: 1px solid orange;
   clear: both;
@@ -45,7 +53,7 @@ title {
   height: 100px;
   top: 150px;
   /* border:1px solid red; */
-  
+
   float: both;
 }
 #meepleDiv {
@@ -58,6 +66,8 @@ title {
 }
 .tile {
   z-index: 1;
+  position: absolute;
+  float: left;
 }
 .meeple {
   z-index: 2;
@@ -68,7 +78,7 @@ title {
 #outerBoard {
   position: absolute;
   /* border:1px solid green; */
-  
+
   overflow: auto;
   top: 100;
   width: 1300px;

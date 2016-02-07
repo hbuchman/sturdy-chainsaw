@@ -1,4 +1,4 @@
-mages = [];
+tilImages = [];
 var meepleImages = [];
 
 function getInitialImageList() {
@@ -22,13 +22,13 @@ function getInitialImageList() {
   var cityLR = Array(3).fill("http://russcon.org/RussCon/carcassonne/city11we.png");
 
   var city1 = Array(5).fill("http://russcon.org/RussCon/carcassonne/city1.png");
-  
+
   var cityR = Array(1).fill("http://russcon.org/RussCon/carcassonne/city3r.png");
-  
+
   var cityRS = Array(2).fill("http://russcon.org/RussCon/carcassonne/city3sr.png");
 
   var diagCR = Array(3).fill("http://russcon.org/RussCon/carcassonne/city2nwr.png");
-  
+
   var diagCRS = Array(2).fill("http://russcon.org/RussCon/carcassonne/city2nwsr.png");
 
   var cloisterR = Array(2).fill("http://russcon.org/RussCon/carcassonne/cloisterr.png");
