@@ -1,0 +1,430 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link type="text/css" rel="stylesheet" href="assets/stylesheets/stylesheet.css"/>
+    <meta charset="utf-8">
+    <title>Carcasonne</title>
+
+    <script src="carcassonne.js"></script>
+    <script>
+    var numRotations = 0;
+    var tileInPlay = "";
+    var playerNames = ["Hayley", "Grant"];
+    var playerScores = [0, 0];
+    var tilesUsed = 0;
+    var meeplesUsed = 0;
+    var castlesUsed = 0;
+    var bridgesUsed = 0;
+    var tilesRemaining = -1;
+    var numCols = 4;
+    var numRows = 5;
+
+    var LEFT_ARROW = 37;
+    var UP_ARROW = 38;
+    var RIGHT_ARROW = 39;
+    var DOWN_ARROW = 40;
+
+    function Init() {
+        getInitialImageList();
+        getMeepleImageList();
+
+        var meeplePerPlayer = 7;
+        var castlePerPlayer = 3;
+        var bridgePerPlayer = 3;
+
+        for (var player = 1; player <= playerNames.length; player++) {
+            for (var meepleCount = 1; meepleCount <= meeplePerPlayer; meepleCount++) {
+                addMeeple(player, meepleCount);
+            };
+            for (var castleCount = 1; castleCount <= castlePerPlayer; castleCount++) {
+                addCastle(player, castleCount);
+            }
+            for (var bridgeCount = 1; bridgeCount <= bridgePerPlayer; bridgeCount++) {
+                addBridge(player, bridgeCount);
+            }
+        }
+
+        tilesRemaining = tileImages.length;
+
+        document.getElementById('player1Name').value = playerNames[0];
+        document.getElementById('player1Score').value = playerScores[0];
+        document.getElementById('player2Name').value = playerNames[1];
+        document.getElementById('player2Score').value = playerScores[1];
+
+        genDivs();
+    }
+
+
+
+    function addMeeple(playerNum, meepleNum) {
+        var meepleDiv = document.getElementById('meepleDiv');
+        var input1 = document.createElement("img");
+        var meepleImage = selectMeepleImage(playerNum - 1);
+        var meepleHeightStart = 0;
+        var meepleWidthSpacing = 50;
+        var meepleHeightSpacing = 35;
+        input1.src = meepleImage;
+        input1.width = "25";
+        input1.height = "25";
+        input1.id = ("name", "m" + meeplesUsed);
+        input1.setAttribute("name", "m" + meeplesUsed);
+        //input1.setAttribute("className","meeple");
+        input1.setAttribute('z-index', '1');
+        meepleDiv.appendChild(input1);
+        var imgEle = document.getElementById(("name", "m" + meeplesUsed));
+        imgEle.addEventListener('dragstart', function(ev) {
+            drag(ev)
+        }, false);
+        imgEle.className = "meeple";
+        var imgStyle = imgEle.getAttribute("style");
+        imgEle.setAttribute("style", "left:" + meepleWidthSpacing * meepleNum + "; top:" + (meepleHeightStart + meepleHeightSpacing * playerNum));
+
+        meeplesUsed++;
+    }
+
+    function addCastle(playerNum, castleNum) {
+        var meepleDiv = document.getElementById('meepleDiv');
+        var input1 = document.createElement("img");
+        var castleImage = getCastleImage();
+        var castleHeightStart = 0;
+        var castleWidthStart = 400;
+        var castleWidthSpacing = 50;
+        var castleHeightSpacing = 35;
+        input1.src = castleImage;
+        input1.width = "55";
+        input1.height = "55";
+        input1.id = ("name", "c" + castlesUsed);
+        input1.setAttribute("name", "c" + castlesUsed);
+        //input1.setAttribute("className","meeple");
+        input1.setAttribute('z-index', '1');
+        meepleDiv.appendChild(input1);
+        var imgEle = document.getElementById(("name", "c" + castlesUsed));
+        imgEle.addEventListener('dragstart', function(ev) {
+            drag(ev)
+        }, false);
+        imgEle.className = "castle";
+        var imgStyle = imgEle.getAttribute("style");
+        imgEle.setAttribute("style", "left:" + (castleWidthStart + castleWidthSpacing * castleNum) + "; top:" + (castleHeightStart + castleHeightSpacing * playerNum));
+
+        castlesUsed++;
+    }
+
+    function addBridge(playerNum, bridgeNum) {
+        var meepleDiv = document.getElementById('meepleDiv');
+        var input1 = document.createElement("img");
+        var bridgeImage = getBridgeImage();
+        var bridgeHeightStart = 0;
+        var bridgeWidthStart = 400;
+        var bridgeWidthSpacing = 50;
+        var bridgeHeightSpacing = 35;
+        input1.src = bridgeImage;
+        input1.width = "55";
+        input1.height = "55";
+        input1.id = ("name", "b" + bridgesUsed);
+        input1.setAttribute("name", "b" + bridgesUsed);
+        //input1.setAttribute("className","meeple");
+        input1.setAttribute('z-index', '1');
+        meepleDiv.appendChild(input1);
+        var imgEle = document.getElementById(("name", "b" + bridgesUsed));
+        imgEle.addEventListener('dragstart', function(ev) {
+            drag(ev)
+        }, false);
+        imgEle.className = "bridge";
+        var imgStyle = imgEle.getAttribute("style");
+        imgEle.setAttribute("style", "left:" + (bridgeWidthStart + bridgeWidthSpacing * bridgeNum) + "; top:" + (bridgeHeightStart + bridgeHeightSpacing * playerNum));
+
+        bridgesUsed++;
+    }
+
+
+    function addTile() {
+        var tileButton = document.getElementById('DrawTile');
+        tileButton.disabled=true;
+
+        var tileDiv = document.getElementById('drawnTileDiv');
+
+        var input1 = document.createElement("img");
+        var tileImage = selectTileImage();
+        input1.src = tileImage;
+        input1.width = "75";
+        input1.height = "75";
+        input1.className = "tile";
+        input1.id = ("name", "i" + tilesUsed);
+        input1.setAttribute("name", "i" + tilesUsed);
+        input1.setAttribute('z-index', '1');
+        tileDiv.appendChild(input1);
+        var imgEle = document.getElementById(("name", "i" + tilesUsed));
+        imgEle.addEventListener('dragstart', function(ev) {
+            drag(ev)
+        }, false);
+        tileInPlay = imgEle;
+        tilesUsed++;
+
+        tilesRemaining--;
+        document.getElementById('tilesRemaining').value = tilesRemaining;
+
+    }
+
+    function allowDrop(ev) {
+        ev.preventDefault();
+    }
+
+    var dragElement = null;
+
+    function dragMeeple(event) {
+        var style = window.getComputedStyle(dragElement, null);
+        event.dataTransfer.setData("text/plain", (parseInt(style.getPropertyValue("left"), 10) - event.clientX) + ',' + (parseInt(style.getPropertyValue("top"), 10) - event.clientY));
+    }
+
+    function dragTile(ev) {
+        ev.dataTransfer.setData("text", ev.target.id);
+    }
+
+    function drag(ev) {
+        dragElement = document.getElementById((event.target.id));
+        var dragKey = ev.target.className;
+        if (dragKey == "meeple"|| dragKey == "castle"|| dragKey == "bridge") {
+            dragMeeple(ev);
+        } else {
+            dragTile(ev);
+        }
+    }
+
+    function drop(ev) {
+        var dragKey = dragElement.className;
+        if (dragKey == "meeple" || dragKey == "castle" || dragKey == "bridge") {
+            dropMeeple(ev);
+        } else {
+            dropTile(ev);
+        }
+    }
+
+    function dropTile(ev) {
+        ev.preventDefault();
+        var data = ev.dataTransfer.getData("text");
+
+        if (event.target.nodeName !== "IMG") {
+            ev.target.appendChild(document.getElementById(data));
+        } else {
+            var parentDiv = ev.target.parentNode;
+            parentDiv.appendChild(document.getElementById(data));
+        }
+
+        var tileButton = document.getElementById('DrawTile');
+        tileButton.disabled=false;
+
+    }
+
+    function dropMeeple(ev) {
+        ev.preventDefault();
+        var offset = ev.dataTransfer.getData("text/plain").split(',');
+        dragElement.style.left = (ev.clientX + parseInt(offset[0], 10)) + 'px';
+        dragElement.style.top = (ev.clientY + parseInt(offset[1], 10)) + 'px';
+        ev.target.appendChild(document.dragElement);
+    }
+
+    function genDivs() {
+        var boardGrid = document.getElementById('boardDiv');
+        for (var rowIndex = 0; rowIndex < numRows; rowIndex++) {
+            var row = document.createElement("div");
+            row.className = "row";
+            row.id = ("name", "row" + rowIndex);
+            for (var colIndex = 0; colIndex < numCols; colIndex++) {
+                addGridCell(rowIndex,colIndex, row)
+            }
+            boardGrid.appendChild(row);
+        }
+        allowDropsInDivs(numCols);
+    }
+
+    function addGridCell(rowIndex,colIndex, row) {
+        var cell = document.createElement("div");
+        cell.className = "gridsquare";
+        var cellID = cellId(rowIndex,colIndex);
+        cell.innerText = cellID;
+        cell.id = ("name", "cell" + cellID);
+        addGridDivs(cell);
+        row.appendChild(cell);
+    }
+
+    function addGridDivs(gridSquare) {
+        var divs =3;
+        for (var colIndex = 0; colIndex < divs; colIndex++) {
+            for (var rowIndex = 0; rowIndex < divs; rowIndex++) {
+                var subsquare = document.createElement("div");
+                subsquare.className = "subsquare";
+                gridSquare.appendChild(subsquare);
+            }
+        }
+
+    }
+
+    function addRowOfCells() {
+        var boardGrid = document.getElementById('boardDiv');
+        var row = document.createElement("div");
+        row.className = "row";
+        row.id = ("name", "row" + numRows);
+        for (var rowIndex = 0; rowIndex < numCols; rowIndex++) {
+            addGridCell(numRows, rowIndex, row)
+        }
+        boardGrid.appendChild(row);
+        allowDropsInDivs(numCols);
+        numRows = numRows + 1;
+    }
+
+    function addColumnOfCells() {
+        var boardGrid = document.getElementById('boardDiv');
+        for (var colIndex = 0; colIndex < numRows; colIndex++) {
+            var row = document.getElementById(("name", "row" + colIndex));
+            addGridCell(colIndex, numCols, row)
+        }
+        allowDropsInDivs(numCols);
+        numCols = numCols + 1;
+    }
+
+
+    function addGridCellFront(colIndex, rowIndex, row) {
+        var cell = document.createElement("div");
+        cell.className = "gridsquare";
+        var cellNumber = (colIndex * numCols) + rowIndex;
+        cell.innerText = cellNumber;
+        cell.id = ("name", "cell" + cellNumber);
+        row.prependChild(cell);
+    }
+
+    function addRowOfCellsTop() {
+        alert("enter");
+        var boardGrid = document.getElementById('boardDiv');
+        var row = document.createElement("div");
+        row.className = "row";
+        row.id = ("name", "row" + numRows);
+        for (var rowIndex = 0; rowIndex < numCols; rowIndex++) {
+            addGridCellFront(numRows, rowIndex, row)
+        }
+        boardGrid.prependChild(row);
+        allowDropsInDivs(numCols);
+        numRows = numRows + 1;
+    }
+
+    function addColumnOfCellsLeft() {
+        var boardGrid = document.getElementById('boardDiv');
+        for (var colIndex = 0; colIndex < numRows; colIndex++) {
+            var row = document.getElementById(("name", "row" + colIndex));
+            addGridCellFront(numRows, colIndex, row)
+        }
+        allowDropsInDivs(numCols);
+        numCols = numCols + 1;
+    }
+
+    function cellId(row,col) {
+        var id = row.toString() + col.toString();
+        return id
+    }
+
+    function allowDropsInDivs(numCols) {
+        for (var colIndex = 0; colIndex < numCols; colIndex++) {
+            for (var rowIndex = 0; rowIndex < numRows; rowIndex++) {
+                var cellEle = document.getElementById(("name", "cell" + cellId(rowIndex,colIndex)))
+                cellEle.addEventListener("drop", function(ev) {
+                    drop(ev)
+                }, false);
+                cellEle.addEventListener('dragover', function(ev) {
+                    allowDrop(ev)
+                }, false);
+            }
+        }
+    }
+
+    function rotateImage() {
+        numRotations++;
+        rotateImageCore()
+    }
+
+    function rotateImageCore() {
+        var imageToRotate = tileInPlay;
+        imageToRotate.setAttribute("style", "transform:rotate(" + (90 * numRotations) + "deg)");
+    }
+
+    function addPoints(playerNum) {
+        var newPoints = parseInt(document.getElementById(("player" + playerNum + "NewPoints")).value);
+        var curPoints = parseInt(document.getElementById(("player" + playerNum + "Score")).value);
+        document.getElementById(("player" + playerNum + "Score")).value = curPoints + newPoints;
+
+    }
+
+    document.onkeydown = function(e) {
+        switch (e.keyCode) {
+            case LEFT_ARROW:
+            {
+                numRotations--;
+                rotateImageCore();
+                break;
+            }
+            case UP_ARROW:
+            {
+                numRotations--;
+                rotateImageCore();
+                break;
+            }
+            case RIGHT_ARROW:
+            {
+                numRotations++;
+                rotateImageCore();
+                break;
+            }
+            case DOWN_ARROW:
+            {
+                numRotations++;
+                rotateImageCore();
+                break;
+            }
+        }
+    };
+
+    </script>
+</head>
+
+<body onload="Init()">
+    <header>
+        <h1>Carcassonne </h1>
+        <h2> A tile laying game </h2>
+        <p> To play, take turns laying tiles onto the board. Tiles must be placed adjacent to at least one existing board tile and they must continue the features of tiles they touch</p>
+        <a href="https://www.wikiwand.com/en/Carcassonne"> </a>
+        <nav>
+            <a href="welcome.html"> Home </a>
+        </nav>
+    </header>
+    <section id="PlayerInfo">
+        <br /> Player 1:
+        <input type="string" id="player1Name" value="" /> Player 1 Score:
+        <input type="integer" id="player1Score" value="" readonly/> Add Points:
+        <input type="integer" id="player1NewPoints" value="" />
+        <input type="button" onclick="addPoints(1)" value="Add Points">
+        <br /> Player 2:
+        <input type="string" id="player2Name" value="" /> Player 2 Score:
+        <input type="integer" id="player2Score" value="" readonly/> Add Points:
+        <input type="integer" id="player2NewPoints" value="" />
+        <input type="button" onclick="addPoints(2)" value="Add Points">
+        <br />
+        <br />
+        <input type="button" onclick="addRowOfCells()" value="Add Row">
+        <input type="button" onclick="addColumnOfCells()" value="Add Column">
+        <input type="button" onclick="addRowOfCellsTop()" value="Add Top Row">
+        <input type="button" onclick="addColumnOfCellsLeft()" value="Add Left Column">
+    <section/>
+
+    <section id="drawnTileDiv">
+        Tiles Remaining:
+        <input type="string" id="tilesRemaining" value="" readonly/>
+        <input type="button" id="DrawTile" value="Draw Tile" onclick="addTile()" />
+        <input type="button" onclick="rotateImage()" value="Rotate Tile">
+    <section/>
+        <div id="meepleDiv" ondrop="drop(event)" ondragover="allowDrop(event)"><div/>
+            <div id="outerBoard">
+                <div id="boardDiv"></div>
+            </div>
+        </body>
+
+        </html>
